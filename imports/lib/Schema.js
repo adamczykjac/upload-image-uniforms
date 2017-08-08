@@ -1,18 +1,14 @@
 import SimpleSchema2 from 'simpl-schema';
-import CustomField from '../components/ui/ImageField'
+import ImageField from '../components/ui/ImageField'
 
-const sampleSchema = new SimpleSchema2({
-    size: {
+export default sampleSchema = new SimpleSchema2({
+    name: {
         type: String,
-        defaultValue: 'm',
-        allowedValues: ['xs', 's', 'm', 'l', 'xl']
+        defaultValue: 'John Doe'
     },
 
-    custom: {
+    picture: {
         type: String,
-        defaultValue: 1,
-        uniforms: CustomField
+        uniforms: ImageField
     }
 })
-
-export default sampleSchema;

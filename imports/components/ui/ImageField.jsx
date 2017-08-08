@@ -5,41 +5,41 @@ import Dropzone     from 'react-dropzone';
 import Images       from '../../lib/Images'
 
 class ImageField extends React.Component {
-  onDropHandler(files) {
-    console.log(files);
+  onDrop(files, onFieldChangeHandler) {
     Images.insert({
       file: files[0],
-      fileName: "pic.jpg",
       streams: 'dynamic',
       chunkSize: 'dynamic',
       onStart: function () {
-        console.log("Uploading");
+        console.log("Uploading...");
       },
-      onUploaded: function (error, fileObj) {
+      onUploaded: function (error, file) {
         if (error) {
           console.log('Error during upload: ' + error);
         } else {
-          console.log('File "' + fileObj.name + '" successfully uploaded');
+          onFieldChangeHandler(file._id);
+          console.log('File "' + file.name + '" successfully uploaded');
         }
-      },
+      }
     })
-    // window.URL.revokeObjectURL(file.preview);
   }
 
   render() {
     let dropzoneRef;
+    let capitalizeFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
     return (
-      <div>
-        <Dropzone ref={(node) => { dropzoneRef = node; }} onDrop={ (files) => this.onDropHandler(files) }>
-          <p>Drop files here.</p>
-        </Dropzone>
-        <button type="button" onClick={() => { dropzoneRef.open() }}>
-          Open File Dialog
-        </button>
-      </div>
+      <section>
+        <div>{ capitalizeFirstLetter(this.props.name) }</div>
+        <div>
+          <Dropzone ref={(node) => { dropzoneRef = node; }}
+            onDrop={ (files) => this.onDrop(files, this.props.onChange) }>
+            <p>Drop picture or click here to choose it.</p>
+          </Dropzone>
+        </div>
+      </section>
     )
   }
 };
 
-export default ImageField;
+export default connectField(ImageField);

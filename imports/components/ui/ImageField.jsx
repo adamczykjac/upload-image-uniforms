@@ -5,20 +5,43 @@ import Dropzone     from 'react-dropzone';
 import Images       from '../../lib/Images'
 
 class ImageField extends React.Component {
-  onDrop(files, onFieldChangeHandler) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      uploadStatus: 'idle',
+      picturePath: null
+    }
+  }
+
+  getImageLink() {
+    return Images.findOne().link();
+  }
+
+  onDrop(files, fieldContext) {
     Images.insert({
       file: files[0],
       streams: 'dynamic',
       chunkSize: 'dynamic',
       onStart: function () {
         console.log("Uploading...");
+        fieldContext.setState({
+          uploadStatus: 'uploading',
+        });
       },
       onUploaded: function (error, file) {
         if (error) {
           console.log('Error during upload: ' + error);
+          fieldContext.setState({
+            uploadStatus: 'failed',
+          });
         } else {
-          onFieldChangeHandler(file._id);
+          console.log(file);
+          fieldContext.props.onChange(file._id);
           console.log('File "' + file.name + '" successfully uploaded');
+          fieldContext.setState({
+            uploadStatus: 'uploaded',
+            picturePath: file.path
+          });
         }
       }
     })
@@ -33,12 +56,20 @@ class ImageField extends React.Component {
         <div>{ capitalizeFirstLetter(this.props.name) }</div>
         <div>
           <Dropzone ref={(node) => { dropzoneRef = node; }}
-            onDrop={ (files) => this.onDrop(files, this.props.onChange) }>
-            <p>Drop picture or click here to choose it.</p>
+            onDrop={ (files) => this.onDrop(files, this) }>
+            { this.state.uploadStatus == 'idle' &&
+              <p>Drop picture or click here to choose it.</p>
+            }
+            { this.state.uploadStatus == 'uploading' &&
+              <p>Uploading...</p>
+            }
+            { this.state.uploadStatus == 'uploaded' &&
+              <img src={ this.getImageLink() } />
+            }
           </Dropzone>
         </div>
       </section>
-    )
+    );
   }
 };
 

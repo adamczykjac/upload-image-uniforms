@@ -1,7 +1,7 @@
 import { FilesCollection } from 'meteor/ostrio:files';
 
 export default Images = new FilesCollection({
-  collectionName: 'Images',
+  collectionName: 'images',
   allowClientCode: false, // Disallow remove files from Client
   onBeforeUpload(file) {
     // Allow upload files under 10MB, and only in png/jpg/jpeg formats
